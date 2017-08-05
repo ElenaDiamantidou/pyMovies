@@ -30,6 +30,7 @@ OPENCV_METHODS = (
 #detect movie shots
 #execute ->
 #python shotDetection.py  movie.mp4 (.avi .mov etc)
+#Use CTRL+C to terminate each video shot detection
 
 def main(argv):
 	fileName = argv.split('.')
@@ -75,7 +76,7 @@ def main(argv):
 	            histName = str(count)
 	            hist = cv2.calcHist([grayImage],[0],None,[256],[0,256])
 	            #hist = cv2.normalize(hist).flatten()
-	            plt.clf()
+	            #plt.clf()
 	            #plt.hist(grayImage.ravel(),256,[0,256])
 	            #plt.savefig(histName)
 
