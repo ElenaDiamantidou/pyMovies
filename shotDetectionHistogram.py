@@ -1,8 +1,12 @@
 '''
 Shot Detection using histograms
 Compare frames histograms
-Difference Threshold = 20%
+Difference Threshold = 15%
 Save shots > 1MB to .avi
+
+#execute ->
+#python shotDetection.py  movie.mp4 (.avi .mov etc)
+Use CTRL+C to terminate each video shot detection
 '''
 
 import cv2, time, sys, glob, os
@@ -27,10 +31,7 @@ OPENCV_METHODS = (
 	("Chi-Squared", cv2.HISTCMP_CHISQR),
 	("Intersection", cv2.HISTCMP_INTERSECT),
 	("Hellinger", cv2.HISTCMP_BHATTACHARYYA))
-#detect movie shots
-#execute ->
-#python shotDetection.py  movie.mp4 (.avi .mov etc)
-#Use CTRL+C to terminate each video shot detection
+
 
 def main(argv):
 	fileName = argv.split('.')
@@ -110,13 +111,13 @@ def tempDelete():
 	print 'clean files'
 	directory = os.listdir('.')
 	for f in range (len(directory)):
-
 		#return in bytes
 		if os.path.getsize(directory[f]) < 524288:
 			os.remove(directory[f])
 
 
 if __name__ == '__main__':
+	#read input file
 	if len(sys.argv) > 2:
 		movies = sys.argv
 		movies.remove('shotDetectionHistogram.py')
