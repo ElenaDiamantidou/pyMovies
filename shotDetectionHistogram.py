@@ -18,6 +18,7 @@ import scipy.spatial.distance as dist
 import datetime
 from scipy.interpolate import interp1d
 import collections
+import csv
 
 # initialize OpenCV methods for histogram comparison
 #OPENCV 3.0 Methods
@@ -27,10 +28,11 @@ OPENCV_METHODS = (
 	("Intersection", cv2.HISTCMP_INTERSECT),
 	("Hellinger", cv2.HISTCMP_BHATTACHARYYA))
 #detect movie shots
+#execute ->
 #python shotDetection.py  movie.mp4 (.avi .mov etc)
 
 def main(argv):
-	fileName = argv[1].split('.')
+	fileName = argv.split('.')
 	count = shotCounter = 0
 	histDiff = histDiff_ = 0
 	success = True
@@ -41,7 +43,7 @@ def main(argv):
 	if not os.path.exists(folderName):
 		os.makedirs(folderName)
 
-	vidCap = cv2.VideoCapture(argv[1])
+	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
 	#first frame
 	success,image = vidCap.read()
@@ -88,13 +90,10 @@ def main(argv):
 	                video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 	            hist_ = hist
 	            video.write(image)
-	            ### if loop to write segment video -> shot
-
-	            #diff = set(() - set(hash(tuple(grayImageB))))
-	            #print len(diff)
 	            #cv2.imshow('frame',grayImage)
-	            if cv2.waitKey(1) & 0xFF == ord('q'):
-	                break
+	            #if cv2.waitKey(1) & 0xFF == ord('q'):
+	            #    break
+
 	        else:
 	            break
 	        count = count + 1
@@ -107,7 +106,7 @@ def main(argv):
 
 #delete files
 def tempDelete():
-	print 'here...'
+	print 'clean files'
 	directory = os.listdir('.')
 	for f in range (len(directory)):
 
@@ -117,11 +116,33 @@ def tempDelete():
 
 
 if __name__ == '__main__':
-	main(sys.argv)
-	directory = os.listdir('.')
-	for f in range (len(directory)):
+	if len(sys.argv) > 2:
+		movies = sys.argv
+		movies.remove('shotDetectionHistogram.py')
+		for mov in range(len(movies)):
+			os.chdir('/home/ediamant/Thesis/pyMovies')
+			print movies[mov]
+			main(movies[mov])
+			tempDelete()
+	elif len(sys.argv) == 2:
+		mov = sys.argv[1]
+		fileName = mov.split('.')
+		if fileName[1] == 'csv':
+			#check for csv input
+			print 'R e a d i n g    C S V'
+			with open(mov, 'rb') as csvfile:
+				spamreader = csv.reader(csvfile)
+				for row in spamreader:
+					os.chdir('/home/ediamant/Thesis/pyMovies')
+					print ', '.join(row)
+					movie = ', '.join(row)
+					main(movie)
+					tempDelete()
 
-		#return in bytes
-		if os.path.getsize(directory[f]) < 524288:
-			os.remove(directory[f])
+		else:
+			main(sys.argv[1])
+			tempDelete()
+	else:
+		print 'Need movie file input'
+
 	cv2.destroyAllWindows()
