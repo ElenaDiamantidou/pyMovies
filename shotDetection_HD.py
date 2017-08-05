@@ -1,5 +1,5 @@
 '''
-Shot Detection using histograms
+Shot Detection using Histogram differences 
 Compare frames histograms
 Difference Threshold = 15%
 Save shots > 1MB to .avi
