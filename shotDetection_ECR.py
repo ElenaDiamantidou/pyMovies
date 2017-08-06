@@ -1,16 +1,16 @@
 '''
-Shot Detection using Histogram differences
-HD computes the difference between the histograms of two consecutive frames
-a histogram is a table that contains for each color within a frame the number of pixels that are shaded in that color
-Difference Threshold = 15%
+Shot Detection using Edge change ratio
+The ECR attempts to compare the actual content of two frames.
+It transforms both frames to edge pictures, i. e. it extracts the probable outlines of objects within the pictures
+Difference Threshold = 90% similarity
 Save shots > 1MB to .avi
 
 #execute ->
-#python shotDetection_HD.py  movie.mp4 (.avi .mov etc)
+#python shotDetection_ECR.py  movie.mp4 (.avi .mov etc)
 Use CTRL+C to terminate each video shot detection
 '''
 
-import cv2, time, sys, glob, os
+import cv2, sys, os
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -19,24 +19,16 @@ from numpy import array
 import scipy
 import csv
 
-# initialize OpenCV methods for histogram comparison
-#OPENCV 3.0 Methods
-OPENCV_METHODS = (
-	("Correlation", cv2.HISTCMP_CORREL),
-	("Chi-Squared", cv2.HISTCMP_CHISQR),
-	("Intersection", cv2.HISTCMP_INTERSECT),
-	("Hellinger", cv2.HISTCMP_BHATTACHARYYA))
-
-
 def main(argv):
 	fileName = argv.split('.')
 	count = shotCounter = 0
-	histDiff = histDiff_ = 0
+	ecr = ecr_ = 0
 	success = True
 	mov = []
+	dilate_rate = 5
 
 	#create directory to save shots
-	folderName = fileName[0] + '_HD'
+	folderName = fileName[0] + '_ECR'
 	if not os.path.exists(folderName):
 		os.makedirs(folderName)
 
@@ -45,6 +37,9 @@ def main(argv):
 	#first frame
 	success,image = vidCap.read()
 	grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	edge_ = cv2.Canny(grayImage, 0, 200)
+	dilated_ = cv2.dilate(edge_, np.ones((dilate_rate, dilate_rate)))
+	inverted_ = (255 - dilated_)
 	#first histogram to compare
 	histName = str(count)
 	hist_ = cv2.calcHist([grayImage],[0],None,[256],[0,256])
@@ -63,33 +58,38 @@ def main(argv):
 	        #print('Read a new frame: ', success)
 	        success,image = vidCap.read()
 	        if  success == True:
-	            grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	            #convert to uint8 for writing ndarrays to video
-	            grayImage = grayImage.astype('uint8')
-	            image = image.astype('uint8')
+				safe_div = lambda x,y: 0 if y == 0 else x / y
+				grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+				#convert to uint8 for writing ndarrays to video
+				grayImage = grayImage.astype('uint8')
+				image = image.astype('uint8')
 
-	            #histogram
-	            histName = str(count)
-	            hist = cv2.calcHist([grayImage],[0],None,[256],[0,256])
-	            #hist = cv2.normalize(hist).flatten()
-	            #plt.clf()
-	            #plt.hist(grayImage.ravel(),256,[0,256])
-	            #plt.savefig(histName)
+				#edge change ratio
+				edge = cv2.Canny(grayImage, 0, 200)
+				dilated = cv2.dilate(edge, np.ones((dilate_rate, dilate_rate)))
+				inverted = (255 - dilated)
 
-	            #compare histograms
-	            histDiff_ = histDiff
-	            histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
-	            diff = abs(histDiff_ - histDiff)
+				log_and1 = (edge_ & inverted)
+				log_and2 = (edge & inverted_)
+				pixels_sum_new = np.sum(edge)
+				pixels_sum_old = np.sum(edge_)
+				out_pixels = np.sum(log_and1)
+				in_pixels = np.sum(log_and2)
 
-	            if diff > 0.15:
-	                shotCounter += 1
-	                videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
-	                video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
-	            hist_ = hist
-	            video.write(image)
-	            #cv2.imshow('frame',grayImage)
-	            #if cv2.waitKey(1) & 0xFF == ord('q'):
-	            #    break
+				ecr = ecr_
+				ecr = max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
+				diff = abs(ecr - ecr_)
+				if diff > 0.90:
+				    shotCounter += 1
+				    videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
+				    video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
+				edge_ = edge
+				dilated_ = dilated
+				inverted_ = inverted
+				video.write(image)
+				#cv2.imshow('frame',grayImage)
+				#if cv2.waitKey(1) & 0xFF == ord('q'):
+				#    break
 
 	        else:
 	            break
