@@ -10,7 +10,7 @@ Save shots > 1MB to .avi
 Use CTRL+C to terminate each video shot detection
 '''
 
-import cv2, sys, os
+import cv2, sys, os, time
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -30,6 +30,7 @@ def main(argv):
 	#create directory to save shots
 	folderName = fileName[0] + '_ECR'
 	if not os.path.exists(folderName):
+		os.chdir('/home/ediamant/Thesis/pyMovies')
 		os.makedirs(folderName)
 
 	vidCap = cv2.VideoCapture(argv)
@@ -79,7 +80,7 @@ def main(argv):
 				ecr = ecr_
 				ecr = max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
 				diff = abs(ecr - ecr_)
-				if diff > 0.90:
+				if diff > 0.9:
 				    shotCounter += 1
 				    videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 				    video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
@@ -113,6 +114,7 @@ def tempDelete():
 
 if __name__ == '__main__':
 	#read input file
+	start_time = time.time()
 	if len(sys.argv) > 2:
 		movies = sys.argv
 		movies.remove('shotDetectionHistogram.py')
@@ -143,4 +145,5 @@ if __name__ == '__main__':
 	else:
 		print 'Need movie file input'
 
+	print("--- %s minutes ---" % ((time.time()/60) - (start_time/60)))
 	cv2.destroyAllWindows()

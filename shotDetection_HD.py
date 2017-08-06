@@ -112,6 +112,7 @@ def tempDelete():
 
 
 if __name__ == '__main__':
+	start_time = time.time()
 	#read input file
 	if len(sys.argv) > 2:
 		movies = sys.argv
@@ -143,4 +144,5 @@ if __name__ == '__main__':
 	else:
 		print 'Need movie file input'
 
+	print("--- %s minutes ---" % ((time.time()/60) - (start_time/60)))
 	cv2.destroyAllWindows()
