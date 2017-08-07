@@ -107,6 +107,8 @@ def tempDelete():
 	directory = os.listdir('.')
 	for f in range (len(directory)):
 		#return in bytes
+		#524288 bytes for mini clips
+		#1048576 bytes for movies
 		if os.path.getsize(directory[f]) < 1048576:
 			os.remove(directory[f])
 
