@@ -20,4 +20,4 @@ It transforms both frames to edge pictures, i. e. it extracts the probable outli
 #### renameShots.py <br />
 rename files from a directory to <br />
 Shot_xx.avi <br />
-_ help to annotate files _
+_help to annotate files_
