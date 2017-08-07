@@ -16,3 +16,8 @@ a histogram is a table that contains for each color within a frame the number of
 Shot Detection using Edge change ratio <br />
 The ECR attempts to compare the actual content of two frames. <br />
 It transforms both frames to edge pictures, i. e. it extracts the probable outlines of objects within the pictures <br />
+
+#### renameShots.py <br />
+rename files from a directory to <br />
+Shot_xx.avi <br />
+_ help to annotate files _

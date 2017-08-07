@@ -1,6 +1,7 @@
 import os, sys
 
 if __name__ == '__main__':
+    #read keyboard input
     directory = sys.argv[1]
     shotCounter = 0
 
@@ -14,4 +15,3 @@ if __name__ == '__main__':
             newFileName = 'Shot_' + str(shotCounter) + '.avi'
             os.rename(fileName, newFileName)
             shotCounter += 1
-    #rename()
