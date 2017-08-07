@@ -35,6 +35,7 @@ def main(argv):
 
 	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
+	vidCap.set(cv2.CAP_PROP_POS_FRAMES,0)
 	#first frame
 	success,image = vidCap.read()
 	grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -57,8 +58,9 @@ def main(argv):
 	try:
 	    while (vidCap.isOpened()):
 	        #print('Read a new frame: ', success)
-	        success,image = vidCap.read()
-	        if  success == True:
+			print count
+			success,image = vidCap.read()
+			if  success == True:
 				safe_div = lambda x,y: 0 if y == 0 else x / y
 				grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 				#convert to uint8 for writing ndarrays to video
@@ -90,25 +92,25 @@ def main(argv):
 				video.write(image)
 				#cv2.imshow('frame',grayImage)
 				#if cv2.waitKey(1) & 0xFF == ord('q'):
-				#    break
+				    #break
 
-	        else:
-	            break
-	        count = count + 1
+			else:
+				break
+			count = count + 5
+			#vidCap.set(cv2.CAP_PROP_POS_FRAMES,framerate+count)
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		tempDelete()
 
 	vidCap.release()
 	video.release()
-
 #delete files
 def tempDelete():
 	print 'clean files'
 	directory = os.listdir('.')
 	for f in range (len(directory)):
 		#return in bytes
-		if os.path.getsize(directory[f]) < 524288:
+		if os.path.getsize(directory[f]) < 1048576:
 			os.remove(directory[f])
 
 
@@ -146,4 +148,5 @@ if __name__ == '__main__':
 		print 'Need movie file input'
 
 	print("--- %s minutes ---" % ((time.time()/60) - (start_time/60)))
+	#print also frames
 	cv2.destroyAllWindows()

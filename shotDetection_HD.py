@@ -93,7 +93,7 @@ def main(argv):
 
 	        else:
 	            break
-	        count = count + 1
+	        count = count + 5
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		tempDelete()
@@ -107,7 +107,7 @@ def tempDelete():
 	directory = os.listdir('.')
 	for f in range (len(directory)):
 		#return in bytes
-		if os.path.getsize(directory[f]) < 524288:
+		if os.path.getsize(directory[f]) < 1048576:
 			os.remove(directory[f])
 
 
@@ -145,4 +145,5 @@ if __name__ == '__main__':
 		print 'Need movie file input'
 
 	print("--- %s minutes ---" % ((time.time()/60) - (start_time/60)))
+	#print also frames
 	cv2.destroyAllWindows()
