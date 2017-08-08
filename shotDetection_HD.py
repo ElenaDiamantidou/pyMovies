@@ -60,40 +60,48 @@ def main(argv):
 	#count frames of video
 	try:
 	    while (vidCap.isOpened()):
-	        #print('Read a new frame: ', success)
-	        success,image = vidCap.read()
-	        if  success == True:
-	            grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	            #convert to uint8 for writing ndarrays to video
-	            grayImage = grayImage.astype('uint8')
-	            image = image.astype('uint8')
+			#print('Read a new frame: ', success)
+			success,image = vidCap.read()
+			image = cv2.medianBlur(image,5)
+			if  success == True:
+				grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+				#convert to uint8 for writing ndarrays to video
+				grayImage = grayImage.astype('uint8')
+				image = image.astype('uint8')
 
-	            #histogram
-	            histName = str(count)
-	            hist = cv2.calcHist([grayImage],[0],None,[256],[0,256])
-	            #hist = cv2.normalize(hist).flatten()
-	            #plt.clf()
-	            #plt.hist(grayImage.ravel(),256,[0,256])
-	            #plt.savefig(histName)
+				thr = cv2.adaptiveThreshold(grayImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 10)
+				print thr
+				#adaptive Threshold
 
-	            #compare histograms
-	            histDiff_ = histDiff
-	            histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
-	            diff = abs(histDiff_ - histDiff)
+				#histogram
+				histName = str(count)
+				hist = cv2.calcHist([grayImage],[0],None,[256],[0,256])
+				#hist = cv2.normalize(hist).flatten()
+				#plt.clf()
+				#plt.hist(grayImage.ravel(),256,[0,256])
+				#plt.savefig(histName)
 
-	            if diff > 0.15:
-	                shotCounter += 1
-	                videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
-	                video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
-	            hist_ = hist
-	            video.write(image)
-	            #cv2.imshow('frame',grayImage)
-	            #if cv2.waitKey(1) & 0xFF == ord('q'):
-	            #    break
+				#plt.imshow(thr, cmap = 'gray')
+				#plt.show()
 
-	        else:
-	            break
-	        count = count + 5
+				#compare histograms
+				histDiff_ = histDiff
+				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
+				diff = abs(histDiff_ - histDiff)
+
+				if diff > 0.15:
+					shotCounter += 1
+					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
+					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
+				hist_ = hist
+				video.write(image)
+				#cv2.imshow('frame',grayImage)
+				#if cv2.waitKey(1) & 0xFF == ord('q'):
+				#    break
+
+			else:
+				break
+			count = count + 5
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		tempDelete()
