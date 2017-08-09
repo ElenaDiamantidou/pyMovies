@@ -69,9 +69,8 @@ def main(argv):
 				grayImage = grayImage.astype('uint8')
 				image = image.astype('uint8')
 
-				thr = cv2.adaptiveThreshold(grayImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 10)
-				print thr
 				#adaptive Threshold
+				thr = cv2.adaptiveThreshold(grayImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 10)
 
 				#histogram
 				histName = str(count)

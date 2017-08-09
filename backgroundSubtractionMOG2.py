@@ -1,16 +1,14 @@
 '''
-Shot Detection using Edge change ratio
-The ECR attempts to compare the actual content of two frames.
-It transforms both frames to edge pictures, i. e. it extracts the probable outlines of objects within the pictures
-Difference Threshold = 90% similarity
+Shot Detection using Background Subtraction
+Difference Threshold = 15%
 Save shots > 1MB to .avi
 
 #execute ->
-#python shotDetection_ECR.py  movie.mp4 (.avi .mov etc)
+#python shotDetection_BS.py  movie.mp4 (.avi .mov etc)
 Use CTRL+C to terminate each video shot detection
 '''
 
-import cv2, sys, os, time
+import cv2, time, sys, glob, os
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -19,30 +17,28 @@ from numpy import array
 import scipy
 import csv
 
+
 def main(argv):
 	fileName = argv.split('.')
 	count = shotCounter = 0
-	ecr = ecr_ = 0
+	fgmask = fgmask_ = 0
 	success = True
 	mov = []
-	dilate_rate = 5
 
 	#create directory to save shots
-	folderName = fileName[0] + '_ECR'
+	folderName = fileName[0] + '_BS'
 	if not os.path.exists(folderName):
-		os.chdir('/home/ediamant/Thesis/pyMovies')
 		os.makedirs(folderName)
 
 	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
-	vidCap.set(cv2.CAP_PROP_POS_FRAMES,0)
+	#vidCap.set(1, 5000)
+	#initialize Background Subtraction Technique
+	fgbg = cv2.createBackgroundSubtractorMOG2()
 	#first frame
 	success,image = vidCap.read()
 	grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	edge_ = cv2.Canny(grayImage, 0, 200)
-	dilated_ = cv2.dilate(edge_, np.ones((dilate_rate, dilate_rate)))
-	inverted_ = (255 - dilated_)
-
+	fgmask_ = fgbg.apply(image)
 	os.chdir(folderName)
 
     #initialize video writer
@@ -52,55 +48,44 @@ def main(argv):
 	videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 	video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 
+
+
 	#count frames of video
 	try:
 	    while (vidCap.isOpened()):
-	        #print('Read a new frame: ', success)
+			#print('Read a new frame: ', success)
 			success,image = vidCap.read()
+			image_ = cv2.medianBlur(image,5)
 			if  success == True:
-				safe_div = lambda x,y: 0 if y == 0 else x / y
-				grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-				#convert to uint8 for writing ndarrays to video
-				grayImage = grayImage.astype('uint8')
-				image = image.astype('uint8')
+				image_ = image_.astype('uint8')
+				fgmask_ = fgmask
+				fgmask = fgbg.apply(image_)
 
-				#edge change ratio
-				edge = cv2.Canny(grayImage, 0, 200)
-				dilated = cv2.dilate(edge, np.ones((dilate_rate, dilate_rate)))
-				inverted = (255 - dilated)
-
-				log_and1 = (edge_ & inverted)
-				log_and2 = (edge & inverted_)
-				pixels_sum_new = np.sum(edge)
-				pixels_sum_old = np.sum(edge_)
-				out_pixels = np.sum(log_and1)
-				in_pixels = np.sum(log_and2)
-
-				ecr = ecr_
-				ecr = max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
-				diff = abs(ecr - ecr_)
-				if diff > 0.9:
-				    shotCounter += 1
-				    videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
-				    video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
-				edge_ = edge
-				dilated_ = dilated
-				inverted_ = inverted
+				'''
+				diff = abs(fgmask - fgmask_)
+				diff = np.mean(diff)
+				if diff > 15:
+					shotCounter += 1
+					print 'Shot_' + str(shotCounter)
+					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
+					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 				video.write(image)
-				#cv2.imshow('frame',grayImage)
-				#if cv2.waitKey(1) & 0xFF == ord('q'):
-				    #break
+				'''
+
+				cv2.imshow('frame',fgmask)
+				if cv2.waitKey(1) & 0xFF == ord('q'):
+				    break
 
 			else:
 				break
 			count = count + 5
-			#vidCap.set(cv2.CAP_PROP_POS_FRAMES,framerate+count)
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		tempDelete()
 
 	vidCap.release()
 	video.release()
+
 #delete files
 def tempDelete():
 	print 'clean files'
@@ -114,8 +99,8 @@ def tempDelete():
 
 
 if __name__ == '__main__':
-	#read input file
 	start_time = time.time()
+	#read input file
 	if len(sys.argv) > 2:
 		movies = sys.argv
 		movies.remove('shotDetectionHistogram.py')
