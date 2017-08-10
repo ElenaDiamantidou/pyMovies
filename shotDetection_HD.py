@@ -32,6 +32,7 @@ def main(argv):
 	fileName = argv.split('.')
 	count = shotCounter = 0
 	histDiff = histDiff_ = 0
+	fgmask = fgmask_ = 0
 	success = True
 	mov = []
 
@@ -42,6 +43,10 @@ def main(argv):
 
 	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
+
+	#initialize Background Subtraction Technique
+	fgbg = cv2.createBackgroundSubtractorMOG2()
+
 	#first frame
 	success,image = vidCap.read()
 	grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -68,13 +73,14 @@ def main(argv):
 				#convert to uint8 for writing ndarrays to video
 				grayImage = grayImage.astype('uint8')
 				image = image.astype('uint8')
+				fgmask = fgbg.apply(image)
 
 				#adaptive Threshold
 				thr = cv2.adaptiveThreshold(grayImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 10)
 
 				#histogram
 				histName = str(count)
-				hist = cv2.calcHist([grayImage],[0],None,[256],[0,256])
+				hist = cv2.calcHist([fgmask],[0],None,[256],[0,256])
 				#hist = cv2.normalize(hist).flatten()
 				#plt.clf()
 				#plt.hist(grayImage.ravel(),256,[0,256])
@@ -87,16 +93,19 @@ def main(argv):
 				histDiff_ = histDiff
 				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
 				diff = abs(histDiff_ - histDiff)
+				distance = np.sqrt(np.dot(diff, diff))
+				#print distance
+				#print diff
 
-				if diff > 0.15:
+				if distance > 0.05:
 					shotCounter += 1
 					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 				hist_ = hist
 				video.write(image)
-				#cv2.imshow('frame',grayImage)
+				#cv2.imshow('frame',fgmask)
 				#if cv2.waitKey(1) & 0xFF == ord('q'):
-				#    break
+				    #break
 
 			else:
 				break

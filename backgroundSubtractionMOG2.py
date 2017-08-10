@@ -13,6 +13,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import math
 from numpy import array
 import scipy
 import csv
@@ -22,8 +23,9 @@ def main(argv):
 	fileName = argv.split('.')
 	count = shotCounter = 0
 	fgmask = fgmask_ = 0
+	diff = diff_ = 0
 	success = True
-	mov = []
+	distance = []
 
 	#create directory to save shots
 	folderName = fileName[0] + '_BS'
@@ -32,13 +34,12 @@ def main(argv):
 
 	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
-	#vidCap.set(1, 5000)
+	vidCap.set(1, 3000)
 	#initialize Background Subtraction Technique
 	fgbg = cv2.createBackgroundSubtractorMOG2()
 	#first frame
 	success,image = vidCap.read()
 	grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	fgmask_ = fgbg.apply(image)
 	os.chdir(folderName)
 
     #initialize video writer
@@ -47,8 +48,10 @@ def main(argv):
 	#add zero parameter for grayscale video
 	videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 	video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
-
-
+	#first frame
+	#s = (height, width)
+	#inframe = np.zeros(s)
+	fgmask_ = fgbg.apply(image)
 
 	#count frames of video
 	try:
@@ -58,23 +61,28 @@ def main(argv):
 			image_ = cv2.medianBlur(image,5)
 			if  success == True:
 				image_ = image_.astype('uint8')
-				fgmask_ = fgmask
 				fgmask = fgbg.apply(image_)
 
-				'''
-				diff = abs(fgmask - fgmask_)
-				diff = np.mean(diff)
-				if diff > 15:
+				diff =  np.sum((fgmask_-fgmask)**2)
+				distance.append(diff)
+				thr = np.mean(distance)
+				#diff = abs(fgmask - fgmask_)
+				#diff = np.mean(diff)
+				#distance = abs(diff - diff_)
+				a = math.ceil((abs(diff-thr)).item())
+				#print len(str(a))
+				if len(str(a)) > 7:
 					shotCounter += 1
-					print 'Shot_' + str(shotCounter)
+					#print 'Shot_' + str(shotCounter)
 					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 				video.write(image)
-				'''
+				fgmask_ = fgmask
 
-				cv2.imshow('frame',fgmask)
-				if cv2.waitKey(1) & 0xFF == ord('q'):
-				    break
+
+				#cv2.imshow('frame',fgmask)
+				#if cv2.waitKey(1) & 0xFF == ord('q'):
+					#break
 
 			else:
 				break
@@ -92,6 +100,7 @@ def tempDelete():
 	directory = os.listdir('.')
 	for f in range (len(directory)):
 		#return in bytes
+		#204800 -> 200KB
 		#524288 bytes for mini clips
 		#1048576 bytes for movies
 		if os.path.getsize(directory[f]) < 1048576:
