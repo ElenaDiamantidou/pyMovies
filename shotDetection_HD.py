@@ -103,7 +103,7 @@ def main(argv):
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 				hist_ = hist
 				video.write(image)
-				#cv2.imshow('frame',fgmask)
+				#cv2.imshow('frame',image)
 				#if cv2.waitKey(1) & 0xFF == ord('q'):
 				    #break
 

@@ -2,7 +2,6 @@
 Shot Detection using Background Subtraction
 Difference Threshold = 15%
 Save shots > 1MB to .avi
-
 #execute ->
 #python shotDetection_BS.py  movie.mp4 (.avi .mov etc)
 Use CTRL+C to terminate each video shot detection
@@ -34,7 +33,8 @@ def main(argv):
 
 	vidCap = cv2.VideoCapture(argv)
 	framerate = vidCap.get(cv2.CAP_PROP_FPS)
-	vidCap.set(1, 3000)
+	#skip titles
+	#vidCap.set(1, 3000)
 	#initialize Background Subtraction Technique
 	fgbg = cv2.createBackgroundSubtractorMOG2()
 	#first frame
