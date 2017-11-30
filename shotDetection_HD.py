@@ -10,7 +10,7 @@ Save shots > 1MB to .avi
 Use CTRL+C to terminate each video shot detection
 '''
 
-import cv2, time, sys, glob, os
+import cv2, time, sys, glob, os, math
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -61,11 +61,14 @@ def main(argv):
 	#add zero parameter for grayscale video
 	videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 	video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
-
+	vidCap.set(cv2.CAP_PROP_POS_FRAMES,0)
 	#count frames of video
+	counter = 50000
 	try:
 	    while (vidCap.isOpened()):
 			#print('Read a new frame: ', success)
+			#vidCap.set(cv2.CAP_PROP_POS_FRAMES,counter)
+			#counter = counter + 2
 			success,image = vidCap.read()
 			image = cv2.medianBlur(image,5)
 			if  success == True:
@@ -73,7 +76,7 @@ def main(argv):
 				#convert to uint8 for writing ndarrays to video
 				grayImage = grayImage.astype('uint8')
 				image = image.astype('uint8')
-				fgmask = fgbg.apply(image)
+				fgmask = fgbg.apply(grayImage)
 
 				#adaptive Threshold
 				thr = cv2.adaptiveThreshold(grayImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 10)
@@ -81,7 +84,6 @@ def main(argv):
 				#histogram
 				histName = str(count)
 				hist = cv2.calcHist([fgmask],[0],None,[256],[0,256])
-				#hist = cv2.normalize(hist).flatten()
 				#plt.clf()
 				#plt.hist(grayImage.ravel(),256,[0,256])
 				#plt.savefig(histName)
@@ -93,11 +95,18 @@ def main(argv):
 				histDiff_ = histDiff
 				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
 				diff = abs(histDiff_ - histDiff)
-				distance = np.sqrt(np.dot(diff, diff))
-				#print distance
-				#print diff
+				summ = histDiff + histDiff_
+				#distance = np.sqrt(np.dot(diff, diff))
+				distance = 0
+				try:
+					#Chi-Square Distance
+					distance = (math.pow(diff,2)/summ)/2
+				except:
+					pass
 
-				if distance > 0.05:
+
+				#-------- THR -------------
+				if distance > 0.01:
 					shotCounter += 1
 					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
@@ -109,7 +118,6 @@ def main(argv):
 
 			else:
 				break
-			count = count + 5
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		tempDelete()
@@ -136,7 +144,7 @@ if __name__ == '__main__':
 		movies = sys.argv
 		movies.remove('shotDetectionHistogram.py')
 		for mov in range(len(movies)):
-			os.chdir('/home/ediamant/Thesis/pyMovies')
+			os.chdir('/home/ediamant/pyMovies')
 			print 'SHOT DETECTION --- ' + movies[mov]
 			main(movies[mov])
 			tempDelete()
@@ -149,7 +157,7 @@ if __name__ == '__main__':
 			with open(mov, 'rb') as csvfile:
 				spamreader = csv.reader(csvfile)
 				for row in spamreader:
-					os.chdir('/home/ediamant/Thesis/pyMovies')
+					os.chdir('/home/ediamant/pyMovies')
 					print 'SHOT DETECTION --- ' + ', '.join(row)
 					movie = ', '.join(row)
 					main(movie)
