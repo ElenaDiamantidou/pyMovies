@@ -54,8 +54,6 @@ def main(argv):
 
 			else:
 				break
-			if time.time()/60 > (start_time/60 + 5):
-				break
 	#use Ctrl+C to interrupt video and save shots
 	except KeyboardInterrupt:
 		pass
