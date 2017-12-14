@@ -1,5 +1,5 @@
 '''
-trim a movie
+trim a movie [segmetation]
 execute
 python trimVideo.py movieFile startTime endTime
 **startTime and endTime count to minutes

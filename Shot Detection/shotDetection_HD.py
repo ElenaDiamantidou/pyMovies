@@ -87,7 +87,6 @@ def main(argv):
 				#plt.clf()
 				#plt.hist(grayImage.ravel(),256,[0,256])
 				#plt.savefig(histName)
-
 				#plt.imshow(thr, cmap = 'gray')
 				#plt.show()
 
@@ -106,7 +105,7 @@ def main(argv):
 
 
 				#-------- THR -------------
-				if distance > 0.01:
+				if distance > 0.02:
 					shotCounter += 1
 					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
