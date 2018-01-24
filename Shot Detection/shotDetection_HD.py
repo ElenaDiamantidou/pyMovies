@@ -92,20 +92,17 @@ def main(argv):
 
 				#compare histograms
 				histDiff_ = histDiff
-				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
+				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_CHISQR)
+				histDiff = histDiff/1000
+				print histDiff/1000
 				diff = abs(histDiff_ - histDiff)
 				summ = histDiff + histDiff_
 				#distance = np.sqrt(np.dot(diff, diff))
-				distance = 0
-				try:
-					#Chi-Square Distance
-					distance = (math.pow(diff,2)/summ)/2
-				except:
-					pass
+
 
 
 				#-------- THR -------------
-				if distance > 0.02:
+				if histDiff > 6.5:
 					shotCounter += 1
 					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))

@@ -30,7 +30,6 @@ def main(argv):
 	#create directory to save shots
 	folderName = fileName[0] + '_ECR'
 	if not os.path.exists(folderName):
-		os.chdir('/home/ediamant/Thesis/pyMovies')
 		os.makedirs(folderName)
 
 	vidCap = cv2.VideoCapture(argv)
@@ -79,7 +78,7 @@ def main(argv):
 				ecr = ecr_
 				ecr = max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
 				diff = abs(ecr - ecr_)
-				if diff > 0.9:
+				if ecr > 0.7:
 				    shotCounter += 1
 				    videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 				    video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
