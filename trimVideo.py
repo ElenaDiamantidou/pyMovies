@@ -1,8 +1,9 @@
 '''
 trim a movie [segmetation]
 execute
-python trimVideo.py movieFile startTime endTime
+python trimVideo.py movieFile startTime endTime countName
 **startTime and endTime count to minutes
+**count is the clip number name
 '''
 
 import sys, os

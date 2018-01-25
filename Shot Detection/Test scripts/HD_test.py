@@ -22,25 +22,23 @@ img = imread('lotr2.png')
 img1 = imread('lotr3.png')
 
 grayImage = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#grayImage = grayImage.astype('uint8')
 grayImage = grayImage.astype('uint8')
 
 grayImage_ = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-#grayImage = grayImage.astype('uint8')
 grayImage_ = grayImage_.astype('uint8')
+
 fgmask = fgbg.apply(grayImage)
 fgmask_ = fgbg_.apply(grayImage_)
 
 hist = cv2.calcHist([fgmask],[0],None,[256],[0,256])
 hist_ = cv2.calcHist([fgmask_],[0],None,[256],[0,256])
-cv2.imwrite('lotr1BS.png',fgmask_)
 
-histName = 'lotr5HD.png'
+#histName = 'lotr5HD.png'
 #hist = cv2.calcHist([fgmask],[0],None,[256],[0,256])
 #plt.clf()
 #plt.hist(img.ravel(),256,[0,256])
 #plt.savefig(histName)
-#plt.imshow(thr, cmap = 'gray')
-plt.show()
+#plt.show()
+
 histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_BHATTACHARYYA)
 print histDiff
