@@ -2,7 +2,7 @@
 Shot Detection using Histogram differences
 HD computes the difference between the histograms of two consecutive frames
 a histogram is a table that contains for each color within a frame the number of pixels that are shaded in that color
-Difference Threshold = 15%
+Difference Threshold = 65%
 Save shots > 1MB to .avi
 
 #execute ->

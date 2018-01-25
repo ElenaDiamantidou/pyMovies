@@ -2,7 +2,7 @@
 Shot Detection using Edge change ratio
 The ECR attempts to compare the actual content of two frames.
 It transforms both frames to edge pictures, i. e. it extracts the probable outlines of objects within the pictures
-Difference Threshold = 90% similarity
+Difference Threshold = 60% similarity
 Save shots > 1MB to .avi
 
 #execute ->
