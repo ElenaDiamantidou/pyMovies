@@ -62,8 +62,6 @@ def main(argv):
 	videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
 	video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 	vidCap.set(cv2.CAP_PROP_POS_FRAMES,0)
-	#count frames of video
-	counter = 50000
 	try:
 	    while (vidCap.isOpened()):
 			#print('Read a new frame: ', success)
@@ -94,12 +92,7 @@ def main(argv):
 				histDiff_ = histDiff
 				histDiff = cv2.compareHist(hist_, hist, cv2.HISTCMP_CHISQR)
 				histDiff = histDiff/1000
-				print histDiff/1000
-				diff = abs(histDiff_ - histDiff)
-				summ = histDiff + histDiff_
-				#distance = np.sqrt(np.dot(diff, diff))
-
-
+				#print histDiff/1000
 
 				#-------- THR -------------
 				if histDiff > 6.5:
@@ -129,7 +122,7 @@ def tempDelete():
 		#return in bytes
 		#524288 bytes for mini clips
 		#1048576 bytes for movies
-		if os.path.getsize(directory[f]) < 1048576:
+		if os.path.getsize(directory[f]) < 524288:
 			os.remove(directory[f])
 
 

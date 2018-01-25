@@ -56,7 +56,11 @@ if __name__ == '__main__':
 	print 'Frames Counter --- ' + sys.argv[1]
 	video = sys.argv[1]
 	cap = cv2.VideoCapture(video)
+	#Video Length
 	length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+	#Frame Info
+	fps = cap.get(cv2.CAP_PROP_FPS)
 	#for frames extraction call main
 	#main(video)
-	print(length)
+	print str(length) + ' Frames'
+	print str(fps) + ' FPS'

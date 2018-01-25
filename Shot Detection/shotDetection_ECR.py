@@ -79,9 +79,9 @@ def main(argv):
 				ecr = max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
 				diff = abs(ecr - ecr_)
 				if ecr > 0.7:
-				    shotCounter += 1
-				    videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
-				    video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
+					shotCounter += 1
+					videoFileName = fileName[0] + '_Shot' + str(shotCounter) +'.avi'
+					video = cv2.VideoWriter(videoFileName,fourcc, framerate, (width,height))
 				edge_ = edge
 				dilated_ = dilated
 				inverted_ = inverted
@@ -108,7 +108,7 @@ def tempDelete():
 		#return in bytes
 		#524288 bytes for mini clips
 		#1048576 bytes for movies
-		if os.path.getsize(directory[f]) < 1048576:
+		if os.path.getsize(directory[f]) < 524288:
 			os.remove(directory[f])
 
 
