@@ -27,6 +27,7 @@ def main(argv):
 		os.makedirs(folderName)
 	vidCap = cv2.VideoCapture(argv)
 	imgFileName = fileName[0] + '_Frame' + str(counter) +'.png'
+	#print os.getcwd()
 	os.chdir(folderName)
 	#count frames of video
 	try:
@@ -61,6 +62,6 @@ if __name__ == '__main__':
 	#Frame Info
 	fps = cap.get(cv2.CAP_PROP_FPS)
 	#for frames extraction call main
-	#main(video)
+	main(video)
 	print str(length) + ' Frames'
 	print str(fps) + ' FPS'
