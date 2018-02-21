@@ -4,7 +4,7 @@ if __name__ == '__main__':
 	#read keyboard input
 	directory = sys.argv[1]
 	typeData = sys.argv[2]
-	shotCounter = 0
+	frameCounter = 0
 
 	if not os.path.exists(os.path.dirname(directory)):
 		print '--- ' + directory + ' --- NOT A DIRECTORY'
@@ -13,6 +13,6 @@ if __name__ == '__main__':
 		#print os.listdir('.')
 		for fileName in os.listdir("."):
 			#print fileName
-			newFileName = typeData + '_' + str(shotCounter) + '.png'
+			newFileName = typeData + '_' + str(frameCounter) + '.png'
 			os.rename(fileName, newFileName)
-			shotCounter += 1
+			frameCounter += 1
