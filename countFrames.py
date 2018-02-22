@@ -62,6 +62,6 @@ if __name__ == '__main__':
 	#Frame Info
 	fps = cap.get(cv2.CAP_PROP_FPS)
 	#for frames extraction call main
-	main(video)
+	#main(video)
 	print str(length) + ' Frames'
 	print str(fps) + ' FPS'
