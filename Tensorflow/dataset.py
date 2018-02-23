@@ -172,6 +172,7 @@ class DataSet:
         and the list of class-numbers as integers,
         and the class-numbers as one-hot encoded arrays.
         """
+        print 'create testSet'
 
         return list(self.get_paths(test=True)), \
                np.asarray(self.class_numbers_test), \

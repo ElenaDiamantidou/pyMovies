@@ -42,7 +42,12 @@ def main(argv):
 				image = image.astype('uint8')
 				counter += 1
 				imgFileName = fileName[0] + '_Frame' + str(counter) +'.png'
-				cv2.imwrite(imgFileName,image)
+				#set specific size for all frames
+				image = cv2.resize(image, (1400, 800))
+
+				if counter%5 == 1:
+					#save mod 5 frames
+					cv2.imwrite(imgFileName,image)
 			else:
 				break
 	#use Ctrl+C to interrupt video
@@ -62,6 +67,6 @@ if __name__ == '__main__':
 	#Frame Info
 	fps = cap.get(cv2.CAP_PROP_FPS)
 	#for frames extraction call main
-	#main(video)
+	main(video)
 	print str(length) + ' Frames'
 	print str(fps) + ' FPS'
