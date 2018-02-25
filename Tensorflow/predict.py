@@ -61,7 +61,7 @@ def plot_preds(image, preds):
     plt.xlabel('Probability')
     plt.xlim(0,1.01)
     plt.tight_layout()
-    plt.savefig('pFace.png')
+    plt.savefig('pMan.png')
 
 
 if __name__=="__main__":
