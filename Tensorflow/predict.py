@@ -79,6 +79,7 @@ if __name__=="__main__":
     if args.image is not None:
         img = Image.open(args.image)
         preds = predict(model, img, target_size)
+        print preds
         plot_preds(img, preds)
 
     if args.image_url is not None:
