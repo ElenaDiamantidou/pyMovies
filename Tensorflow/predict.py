@@ -55,7 +55,7 @@ def plot_preds(image, preds):
     plt.axis('off')"""
 
     plt.figure()
-    labels = ("face", "mountain")
+    labels = ("Female", "Male")
     plt.barh([0, 1], preds, alpha=0.5)
     plt.yticks([0, 1], labels)
     plt.xlabel('Probability')
