@@ -55,13 +55,13 @@ def plot_preds(image, preds):
     plt.axis('off')"""
 
     plt.figure()
-    labels = ("Female", "Male")
+    labels = ("Face", "Mountain")
     plt.barh([0, 1], preds, alpha=0.5)
     plt.yticks([0, 1], labels)
     plt.xlabel('Probability')
     plt.xlim(0,1.01)
     plt.tight_layout()
-    plt.savefig('pMan.png')
+    plt.savefig('face.png')
 
 
 if __name__=="__main__":
